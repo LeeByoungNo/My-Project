@@ -20,7 +20,7 @@ public class LampController : MonoBehaviour
         if (lampOn)
         {
             // 켜졌을 때: 노란색
-            rend.material.color = Color.yellow;
+            rend.material.color = Color.softRed;
         }
         else
         {

@@ -1,6 +1,7 @@
-using UnityEngine;
 using NativeWebSocket; // 라이브러리 설치 필요
 using Newtonsoft.Json.Linq;
+using TMPro;
+using UnityEngine;
 
 public class WebSocketClient : MonoBehaviour
 {
@@ -9,6 +10,22 @@ public class WebSocketClient : MonoBehaviour
     // [중요] 이동시킬 YAxle 오브젝트를 인스펙터에서 연결하기 위한 변수
     public GameObject yAxle;
     public GameObject yTray;
+
+    public GameObject liftBody;
+
+    public GameObject inputFeeder;
+    public GameObject outputFeeder;
+
+    public LampController cs1;
+    public LampController cs2;
+
+    public LampController cs3;
+    public LampController cs4;
+
+    public LampController cs5;
+    public LampController cs6;
+
+    public TextMeshProUGUI debugText; // 2. 인스펙터에서 DebugOverlay를 연결할 변수
 
     async void Start()
     {
@@ -29,6 +46,7 @@ public class WebSocketClient : MonoBehaviour
             {
                 // 1. 문자열을 JSON 객체로 변환
                 JObject data = JObject.Parse(jsonString);
+                string displayText = "";
 
                 // 2. "D10"이라는 이름을 가진 키의 값을 가져옴
                 if (data.ContainsKey("D10_DWORD"))
@@ -37,10 +55,12 @@ public class WebSocketClient : MonoBehaviour
 
                     // 3. 마이크로미터 단위를 유니티 단위로 변환하여 이동
                     //float unityX = d10Value / 1000000f;
-                    float unityX = d10Value / 10000000f;
+                    float unityX = d10Value / 100000000f;
 
                     unityX = unityX - 0.4f;
                     MoveYAxle(unityX);
+
+                    displayText += "X :" + d10Value;
                 }
 
                 if (data.ContainsKey("D50_DWORD"))
@@ -52,8 +72,23 @@ public class WebSocketClient : MonoBehaviour
                     //float unityY = d50Value / 10000000f;
                     float unityY = d50Value / 5000000f;
 
-                    unityY = unityY - 0.4f;
+                    unityY = unityY - 0.21f;
                     MoveTray(unityY);
+
+                    displayText += "\nY :" + d50Value;
+                }
+
+                if(data.ContainsKey("D76_DWORD"))
+                {
+                    float d76Value = (float)data["D76_DWORD"];
+
+                    // 3. 마이크로미터 단위를 유니티 단위로 변환하여 이동
+                    //float unityX = d10Value / 1000000f;
+                    //float unityY = d50Value / 10000000f;
+                    float unityY = d76Value / 5000000f;
+
+                    
+                    displayText += "\n3 :" + d76Value;
                 }
 
                 // 참고: X12 같은 불리언(True/False) 값 가져오기
@@ -61,6 +96,79 @@ public class WebSocketClient : MonoBehaviour
                 {
                     bool isLampOn = (bool)data["X12"];
                     // 램프 제어 로직...
+                }
+
+
+                if (data.ContainsKey("X0"))
+                {
+                    int isLampOn = (int)data["X0"];
+                    // Debug.Log("1 cs3 :"+ isLampOn);
+                    // 램프 제어 로직...
+                    cs1.lampOn = isLampOn == 1 ? true : false;
+                }
+                if (data.ContainsKey("X1"))
+                {
+                    int isLampOn = (int)data["X1"];
+                    //Debug.Log("2 cs4 :" + isLampOn);
+                    // 램프 제어 로직...
+                    cs2.lampOn = isLampOn == 1 ? true : false;
+                }
+
+                if (data.ContainsKey("X2"))
+                {
+                    int isLampOn = (int)data["X2"];
+                   // Debug.Log("1 cs3 :"+ isLampOn);
+                    // 램프 제어 로직...
+                    cs3.lampOn = isLampOn == 1 ? true : false;
+                }
+                if (data.ContainsKey("X3"))
+                {
+                    int isLampOn = (int)data["X3"];
+                    //Debug.Log("2 cs4 :" + isLampOn);
+                    // 램프 제어 로직...
+                    cs4.lampOn = isLampOn == 1 ? true : false;
+                }
+
+                if (data.ContainsKey("X4"))
+                {
+                    int isLampOn = (int)data["X4"];
+                    //Debug.Log("2 cs4 :" + isLampOn);
+                    // 램프 제어 로직...
+                    cs5.lampOn = isLampOn == 1 ? true : false;
+                }
+                if (data.ContainsKey("X5"))
+                {
+                    int isLampOn = (int)data["X5"];
+                    //Debug.Log("2 cs4 :" + isLampOn);
+                    // 램프 제어 로직...
+                    cs6.lampOn = isLampOn == 1 ? true : false;
+                }
+
+                if (data.ContainsKey("Y10"))
+                {
+                    int isForwardOn = (int)data["Y10"];
+
+                    inputFeeder.GetComponent<FeederControl>().isPushed = isForwardOn == 1 ? true : false;
+                }
+
+                if (data.ContainsKey("Y11"))
+                {
+                    int isForwardOn = (int)data["Y11"];
+
+                    liftBody.GetComponent<LiftSylinderControl>().isPushed = isForwardOn == 1 ? true : false;
+                }
+                if (data.ContainsKey("Y12"))
+                {
+                    int isForwardOn = (int)data["Y12"];
+
+                    outputFeeder.GetComponent<FeederControl>().isPushed = isForwardOn == 1 ? true : false;
+                }
+
+                // 3. 텍스트에 값 출력 (동적 입력)
+                if (debugText != null)
+                {
+                    // 소수점 2자리까지 표시하거나 바코드 등 문자열 출력
+                    debugText.text = displayText;
                 }
             }
             catch (System.Exception e)

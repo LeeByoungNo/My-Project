@@ -54,13 +54,13 @@ public class MqttReceiver : MonoBehaviour
     void Update()
     {
         // 3. 실제 오브젝트 움직이기 (선형 보간으로 부드럽게 이동)
-        Vector3 newPosProp = xAxleObject.localPosition;
-        newPosProp.x = Mathf.Lerp(newPosProp.x, targetX * 0.001f, Time.deltaTime * 5f);
-        xAxleObject.localPosition = newPosProp;
+        //Vector3 newPosProp = xAxleObject.localPosition;
+        //newPosProp.x = Mathf.Lerp(newPosProp.x, targetX * 0.001f, Time.deltaTime * 5f);
+        //xAxleObject.localPosition = newPosProp;
 
-        Vector3 newPosAxis = yAxleObject.localPosition;
-        newPosAxis.y = Mathf.Lerp(newPosAxis.y, targetY * 0.001f, Time.deltaTime * 5f);
-        yAxleObject.localPosition = newPosAxis;
+        //Vector3 newPosAxis = yAxleObject.localPosition;
+        //newPosAxis.y = Mathf.Lerp(newPosAxis.y, targetY * 0.001f, Time.deltaTime * 5f);
+        //yAxleObject.localPosition = newPosAxis;
     }
 
     void OnApplicationQuit()
