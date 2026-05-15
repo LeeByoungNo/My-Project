@@ -27,6 +27,9 @@ public class WebSocketClient : MonoBehaviour
 
     public TextMeshProUGUI debugText; // 2. 인스펙터에서 DebugOverlay를 연결할 변수
 
+    // 1. IndexControl 컴포넌트를 가져옵니다. (인스펙터에서 연결하거나 Find 사용)
+    public GameObject indexTable;
+
     async void Start()
     {
 
@@ -55,12 +58,12 @@ public class WebSocketClient : MonoBehaviour
 
                     // 3. 마이크로미터 단위를 유니티 단위로 변환하여 이동
                     //float unityX = d10Value / 1000000f;
-                    float unityX = d10Value / 100000000f;
+                    float unityX = d10Value / 10000f;
 
-                    unityX = unityX - 0.4f;
-                    MoveYAxle(unityX);
+                    //unityX = unityX - 0.4f;
+                    MoveYAxle((unityX/1000)  -   0.47f);
 
-                    displayText += "X :" + d10Value;
+                    displayText += "X :" + unityX + " mm";
                 }
 
                 if (data.ContainsKey("D50_DWORD"))
@@ -68,27 +71,26 @@ public class WebSocketClient : MonoBehaviour
                     float d50Value = (float)data["D50_DWORD"];
 
                     // 3. 마이크로미터 단위를 유니티 단위로 변환하여 이동
-                    //float unityX = d10Value / 1000000f;
-                    //float unityY = d50Value / 10000000f;
-                    float unityY = d50Value / 5000000f;
+                    
+                    float unityY = d50Value / 10000f;
 
-                    unityY = unityY - 0.21f;
-                    MoveTray(unityY);
+                    //unityY = unityY - 0.21f;
+                    MoveTray((unityY/1000)- 0.17f);
 
-                    displayText += "\nY :" + d50Value;
+                    displayText += "\nY :" + unityY + " mm";
                 }
 
                 if(data.ContainsKey("D76_DWORD"))
                 {
                     float d76Value = (float)data["D76_DWORD"];
 
-                    // 3. 마이크로미터 단위를 유니티 단위로 변환하여 이동
-                    //float unityX = d10Value / 1000000f;
-                    //float unityY = d50Value / 10000000f;
-                    float unityY = d76Value / 5000000f;
+                    
+                    float unityZ = d76Value / 100000f;
 
                     
-                    displayText += "\n3 :" + d76Value;
+                    displayText += "\n3 :" + unityZ + "°";
+
+                    indexTable.GetComponent<IndexControl>().SetTargetRotation(unityZ);
                 }
 
                 // 참고: X12 같은 불리언(True/False) 값 가져오기
